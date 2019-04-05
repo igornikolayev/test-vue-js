@@ -4,17 +4,6 @@
   </div>
 </template>
 
-<script>
-document.onload = function() {
-  const preloader = document.getElementById("loader");
-
-  setTimeout(function() {
-    if (!preloader.classList.contains("load")) {
-      preloader.classList.toggle("load");
-    }
-  }, 2000);
-};
-</script>
 
 <style  lang="scss">
 .preloader {

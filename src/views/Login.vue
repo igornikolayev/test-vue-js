@@ -3,9 +3,16 @@
     <b-container>
       <b-row>
         <b-col cols="12">
-          <b-form @submit="onSubmit">
-            <b-form-group id="nameGroup" label="Your name:" label-for="nameInput">
-              <b-form-input id="nameInput" v-model="form.name" required placeholder="Enter name"/>
+          <b-form name="formLogin" id="formLogin">
+            <b-form-group id="emailGroup" label="Your email:" label-for="emailInput">
+              <b-form-input
+                id="emailInput"
+                v-model="form.email"
+                name="email"
+                type="email"
+                required
+                placeholder="Enter name"
+              />
             </b-form-group>
             <b-form-group id="passGroup" label="Your Password:" label-for="passInput">
               <b-form-input
@@ -14,9 +21,10 @@
                 v-model="form.password"
                 required
                 placeholder="Enter Password"
+                name="password"
               />
             </b-form-group>
-            <b-button type="submit" variant="primary">Submit</b-button>
+            <b-button type="submit" @click="onSubmit" variant="primary">Submit</b-button>
             <b-alert
               show
               variant="danger"
@@ -34,19 +42,51 @@ export default {
   data() {
     return {
       form: {
-        name: "",
-        password: ""
+        email: "max@test.com",
+        password: "12345"
       }
     };
   },
   methods: {
-    onSubmit(evt) {
-      evt.preventDefault();
-      if (this.form.name == "admin" && this.form.password == "12345") {
-        this.$store.commit("checker");
+    onSubmit(event) {
+      event.preventDefault();
+
+      //post
+
+      let postRequestForm = new XMLHttpRequest();
+      postRequestForm.open(
+        "POST",
+        "https://mysterious-reef-29460.herokuapp.com/api/v1/validate",
+        false
+      );
+
+      postRequestForm.setRequestHeader("Content-type", "application/json");
+
+      postRequestForm.send(
+        JSON.stringify({
+          email: document.forms.formLogin.email.value, // 'max@test.com',
+          password: document.forms.formLogin.password.value // '12345'
+        })
+      );
+
+      postRequestForm.onreadystatechange = function() {
+        if (postRequestForm.readyState != 4) return;
+
+        if (postRequestForm.status != 200) {
+          alert(postRequestForm.status + ": " + postRequestForm.statusText);
+        }
+      };
+
+      let dataFromServer = JSON.parse(postRequestForm.responseText);
+
+      if (dataFromServer.status == "ok") {
+        this.$store.commit("checker", dataFromServer.data.id);
+
         setTimeout(() => {
           this.$router.push("Profile");
         }, 100);
+
+        document.getElementById("error-type").style.display = "none";
       } else {
         document.getElementById("error-type").style.display = "block";
       }

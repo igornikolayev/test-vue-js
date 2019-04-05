@@ -8,6 +8,7 @@
 
 <script>
 import AppHeader from "./components/AppHeader";
+import AppPreloader from "./components/AppPreloader";
 
 export default {
   data() {
@@ -17,7 +18,8 @@ export default {
   },
 
   components: {
-    AppHeader
+    AppHeader,
+    AppPreloader
   }
 };
 </script>
